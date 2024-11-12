@@ -75,8 +75,12 @@ class ReversiGame:
                                     CELL_SIZE / 2 - 5, color=(255, 255, 255), fill=(255, 255, 255), parent="board")
 
     def handle_click(self, sender, app_data):
+        # Get the mouse position
+        mouse_x, mouse_y = dpg.get_mouse_pos()
+        # Determine the board cell from the mouse position
+        x, y = int(mouse_x // CELL_SIZE), int(mouse_y // CELL_SIZE)
+
         # Only handle clicks within the board
-        x, y = app_data[0] // CELL_SIZE, app_data[1] // CELL_SIZE
         if 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE:  # Ensure clicks are within the board bounds
             if self.is_valid_move(x, y, self.current_turn):
                 self.place_piece(x, y, self.current_turn)
