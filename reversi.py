@@ -27,6 +27,7 @@ class ReversiGame:
         # Main drawing area for the game board
         with dpg.window(label="Game Board", width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, pos=(WINDOW_PADDING, WINDOW_PADDING), tag="game_board_window"):
             with dpg.drawlist(width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, tag="board"):
+                dpg.add_mouse_click_handler(callback=self.handle_click)  # Mouse click handler
                 self.draw_board()
         
         # Control Panel
@@ -71,15 +72,17 @@ class ReversiGame:
                                     CELL_SIZE / 2 - 5, color=(255, 255, 255), fill=(255, 255, 255), parent="board")
 
     def handle_click(self, sender, app_data):
+        # Mouse click position
         x, y = app_data[0] // CELL_SIZE, app_data[1] // CELL_SIZE
-        if self.is_valid_move(x, y, self.current_turn):
-            self.place_piece(x, y, self.current_turn)
-            self.switch_turn()
-            self.draw_board()
-            if self.pvc_mode and self.current_turn == WHITE:
-                self.computer_move()
+        if 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE:  # Ensure clicks are within the board bounds
+            if self.is_valid_move(x, y, self.current_turn):
+                self.place_piece(x, y, self.current_turn)
                 self.switch_turn()
                 self.draw_board()
+                if self.pvc_mode and self.current_turn == WHITE:
+                    self.computer_move()
+                    self.switch_turn()
+                    self.draw_board()
 
     def is_valid_move(self, x, y, color):
         if self.board[x][y] != EMPTY:
