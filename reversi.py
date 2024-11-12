@@ -152,9 +152,14 @@ class ReversiGame:
             self.place_piece(x, y, WHITE)
 
     def update_current_player_label(self):
-        player_text = "Black" if self.current_turn == BLACK else "White"
+        # Determine the current player text and color
+        player_text = "Black's turn" if self.current_turn == BLACK else "White's turn"
         player_color = (0, 0, 0) if self.current_turn == BLACK else (255, 255, 255)
+        
+        # Update the text of the current player label
         dpg.set_value("current_player", player_text)
+        
+        # Update the color of the label text
         dpg.configure_item("current_player", color=player_color)
 
     def end_game(self):
