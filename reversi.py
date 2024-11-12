@@ -163,10 +163,10 @@ class ReversiGame:
         # Update the color of the label text
         dpg.configure_item("current_player", color=player_color)
 
-        # Now, add a background rectangle using a drawlist to change background color for contrast
-        with dpg.drawlist(width=200, height=40, pos=(0, 0), tag="current_player_bg"):
-            dpg.draw_text((10, 10), player_text, color=player_color, size=20)  # Text with updated color
+        # Add a background rectangle using a drawlist (make sure to set a parent)
+        with dpg.drawlist(parent="Control Panel", width=200, height=40, pos=(0, 0), tag="current_player_bg"):
             dpg.draw_rect((0, 0), (200, 40), color=background_color, thickness=0)  # Background rectangle
+            dpg.draw_text((10, 10), player_text, color=player_color, size=20)  # Text with updated color
 
     def end_game(self):
         black_count = sum(row.count(BLACK) for row in self.board)
