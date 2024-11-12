@@ -24,16 +24,19 @@ class ReversiGame:
         dpg.create_context()
         dpg.create_viewport(title="Reversi Game", width=BOARD_SIZE * CELL_SIZE + 200, height=BOARD_SIZE * CELL_SIZE + 80)
         
-        # Buttons for starting PvC and resetting game
+        # Main drawing area for the game board
+        with dpg.window(label="Game Board", width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, pos=(WINDOW_PADDING, WINDOW_PADDING), tag="game_board_window"):
+            with dpg.drawlist(width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, tag="board"):
+                self.draw_board()
+        
+        # Control Panel
         with dpg.window(label="Control Panel", width=200, height=80, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):
             dpg.add_button(label="Player vs Computer", callback=self.start_pvc)
             dpg.add_button(label="Reset Game", callback=self.reset_game)
+
+        # Set the game board as the primary window
+        dpg.set_primary_window("game_board_window", True)
         
-        with dpg.window(label="Game Board", width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, pos=(WINDOW_PADDING, WINDOW_PADDING)):
-            with dpg.drawlist(width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE):
-                self.draw_board()
-        
-        dpg.set_primary_window("Game Board", True)
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.start_dearpygui()
