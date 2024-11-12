@@ -30,12 +30,14 @@ class ReversiGame:
                 self.draw_board()
 
         # Control Panel (made taller)
-        with dpg.window(label="Control Panel", width=200, height=160, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):  # Increased height
+        with dpg.window(label="Control Panel", width=200, height=160, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING), tag="control_panel"):  # Increased height
             dpg.add_button(label="Player vs Computer", callback=self.start_pvc)
             dpg.add_button(label="Player vs Player", callback=self.start_pvp)
             dpg.add_button(label="Reset Game", callback=self.reset_game)
             dpg.add_text("Current Player:", tag="current_player_label")
-            dpg.add_text("Black", color=(0, 0, 0), tag="current_player")  # This text will be updated dynamically
+            dpg.add_drawlist(parent="control_panel", width=200, height=40, pos=(0, 0), tag="current_player")
+
+        self.update_current_player_label()
 
         # Handler Registry for mouse clicks
         with dpg.handler_registry():
@@ -154,19 +156,14 @@ class ReversiGame:
     def update_current_player_label(self):
         # Determine the current player text and color
         player_text = "Black's turn" if self.current_turn == BLACK else "White's turn"
-        player_color = (0, 0, 0) if self.current_turn == BLACK else (255, 255, 255)
-        background_color = (255, 255, 255) if self.current_turn == BLACK else (0, 0, 0)
+        player_color = (0, 0, 0) if self.current_turn == WHITE else (255, 255, 255)
+        background_color = (255, 255, 255) if self.current_turn == WHITE else (0, 0, 0)
 
+        dpg.delete_item("current_player_bg", children_only=True)
+        # Update the color and background of the label text
+        dpg.draw_rectangle((0, 0), (200, 40), fill=background_color, thickness=0, parent="current_player")  # Background rectangle
         # Update the text of the current player label
-        dpg.set_value("current_player", player_text)
-
-        # Update the color of the label text
-        dpg.configure_item("current_player", color=player_color)
-
-        # Add a background rectangle using a drawlist (make sure to set a parent)
-        with dpg.drawlist(parent="Control Panel", width=200, height=40, pos=(0, 0), tag="current_player_bg"):
-            dpg.draw_rect((0, 0), (200, 40), color=background_color, thickness=0)  # Background rectangle
-            dpg.draw_text((10, 10), player_text, color=player_color, size=20)  # Text with updated color
+        dpg.draw_text((10, 10), player_text, color=player_color, size=20, parent="current_player")  # Text with updated color
 
     def end_game(self):
         black_count = sum(row.count(BLACK) for row in self.board)
