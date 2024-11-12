@@ -22,20 +22,20 @@ class ReversiGame:
 
         # Dear PyGui Setup
         dpg.create_context()
-        dpg.create_viewport(title="Reversi Game", width=BOARD_SIZE * CELL_SIZE + 200, height=BOARD_SIZE * CELL_SIZE + 120)
+        dpg.create_viewport(title="Reversi Game", width=BOARD_SIZE * CELL_SIZE + 200, height=BOARD_SIZE * CELL_SIZE + 160)  # Increased height
 
         # Main drawing area for the game board
         with dpg.window(label="Game Board", width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, pos=(WINDOW_PADDING, WINDOW_PADDING), tag="game_board_window"):
             with dpg.drawlist(width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, tag="board"):
                 self.draw_board()
 
-        # Control Panel
-        with dpg.window(label="Control Panel", width=200, height=120, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):
+        # Control Panel (made taller)
+        with dpg.window(label="Control Panel", width=200, height=160, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):  # Increased height
             dpg.add_button(label="Player vs Computer", callback=self.start_pvc)
             dpg.add_button(label="Player vs Player", callback=self.start_pvp)
             dpg.add_button(label="Reset Game", callback=self.reset_game)
             dpg.add_text("Current Player:", tag="current_player_label")
-            dpg.add_text("Black", color=(0, 0, 0), tag="current_player")
+            dpg.add_text("Black", color=(0, 0, 0), tag="current_player")  # This text will be updated dynamically
 
         # Handler Registry for mouse clicks
         with dpg.handler_registry():
@@ -155,12 +155,16 @@ class ReversiGame:
         # Determine the current player text and color
         player_text = "Black's turn" if self.current_turn == BLACK else "White's turn"
         player_color = (0, 0, 0) if self.current_turn == BLACK else (255, 255, 255)
-        
+        background_color = (255, 255, 255) if self.current_turn == BLACK else (0, 0, 0)
+
         # Update the text of the current player label
         dpg.set_value("current_player", player_text)
-        
+
         # Update the color of the label text
         dpg.configure_item("current_player", color=player_color)
+
+        # Change the background color of the current player text for better contrast
+        dpg.configure_item("current_player", fill=background_color)
 
     def end_game(self):
         black_count = sum(row.count(BLACK) for row in self.board)
