@@ -22,7 +22,7 @@ class ReversiGame:
 
         # Dear PyGui Setup
         dpg.create_context()
-        dpg.create_viewport(title="Reversi Game", width=BOARD_SIZE * CELL_SIZE + 200, height=BOARD_SIZE * CELL_SIZE + 80)
+        dpg.create_viewport(title="Reversi Game", width=BOARD_SIZE * CELL_SIZE + 200, height=BOARD_SIZE * CELL_SIZE + 120)
 
         # Main drawing area for the game board
         with dpg.window(label="Game Board", width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, pos=(WINDOW_PADDING, WINDOW_PADDING), tag="game_board_window"):
@@ -30,9 +30,12 @@ class ReversiGame:
                 self.draw_board()
 
         # Control Panel
-        with dpg.window(label="Control Panel", width=200, height=80, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):
+        with dpg.window(label="Control Panel", width=200, height=120, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):
             dpg.add_button(label="Player vs Computer", callback=self.start_pvc)
+            dpg.add_button(label="Player vs Player", callback=self.start_pvp)
             dpg.add_button(label="Reset Game", callback=self.reset_game)
+            dpg.add_text("Current Player:", tag="current_player_label")
+            dpg.add_text("Black", color=(0, 0, 0), tag="current_player")
 
         # Handler Registry for mouse clicks
         with dpg.handler_registry():
@@ -50,12 +53,17 @@ class ReversiGame:
         self.pvc_mode = True
         self.reset_game()
 
+    def start_pvp(self):
+        self.pvc_mode = False
+        self.reset_game()
+
     def reset_game(self):
         self.board = [[EMPTY for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
         self.board[3][3], self.board[4][4] = WHITE, WHITE
         self.board[3][4], self.board[4][3] = BLACK, BLACK
         self.current_turn = BLACK
         self.draw_board()
+        self.update_current_player_label()
 
     def draw_board(self):
         dpg.delete_item("board", children_only=True)
@@ -77,7 +85,6 @@ class ReversiGame:
     def handle_click(self, sender, app_data):
         # Get the mouse position
         mouse_x, mouse_y = dpg.get_mouse_pos()
-        # Determine the board cell from the mouse position
         x, y = int(mouse_x // CELL_SIZE), int(mouse_y // CELL_SIZE)
 
         # Only handle clicks within the board
@@ -86,10 +93,16 @@ class ReversiGame:
                 self.place_piece(x, y, self.current_turn)
                 self.switch_turn()
                 self.draw_board()
-                if self.pvc_mode and self.current_turn == WHITE:
+                self.update_current_player_label()
+
+                # Check if game is over
+                if not self.has_valid_move(self.current_turn) and not self.has_valid_move(-self.current_turn):
+                    self.end_game()
+                elif self.pvc_mode and self.current_turn == WHITE:
                     self.computer_move()
                     self.switch_turn()
                     self.draw_board()
+                    self.update_current_player_label()
 
     def is_valid_move(self, x, y, color):
         if self.board[x][y] != EMPTY:
@@ -98,6 +111,9 @@ class ReversiGame:
             if self.can_flip(x, y, dx, dy, color):
                 return True
         return False
+
+    def has_valid_move(self, color):
+        return any(self.is_valid_move(x, y, color) for x in range(BOARD_SIZE) for y in range(BOARD_SIZE))
 
     def can_flip(self, x, y, dx, dy, color):
         nx, ny = x + dx, y + dy
@@ -135,5 +151,19 @@ class ReversiGame:
             x, y = random.choice(valid_moves)
             self.place_piece(x, y, WHITE)
 
-if __name__ == "__main__":
-    game = ReversiGame()
+    def update_current_player_label(self):
+        player_text = "Black" if self.current_turn == BLACK else "White"
+        player_color = (0, 0, 0) if self.current_turn == BLACK else (255, 255, 255)
+        dpg.set_value("current_player", player_text)
+        dpg.configure_item("current_player", color=player_color)
+
+    def end_game(self):
+        black_count = sum(row.count(BLACK) for row in self.board)
+        white_count = sum(row.count(WHITE) for row in self.board)
+        if black_count > white_count:
+            winner = "Black wins!"
+        elif white_count > black_count:
+            winner = "White wins!"
+        else:
+            winner = "It's a tie!"
+        dpg.set_value("current_player", f"Game Over: {winner}")
