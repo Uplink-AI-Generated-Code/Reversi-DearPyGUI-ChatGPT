@@ -23,21 +23,24 @@ class ReversiGame:
         # Dear PyGui Setup
         dpg.create_context()
         dpg.create_viewport(title="Reversi Game", width=BOARD_SIZE * CELL_SIZE + 200, height=BOARD_SIZE * CELL_SIZE + 80)
-        
+
         # Main drawing area for the game board
         with dpg.window(label="Game Board", width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, pos=(WINDOW_PADDING, WINDOW_PADDING), tag="game_board_window"):
             with dpg.drawlist(width=BOARD_SIZE * CELL_SIZE, height=BOARD_SIZE * CELL_SIZE, tag="board"):
-                dpg.add_mouse_click_handler(callback=self.handle_click)  # Mouse click handler
                 self.draw_board()
-        
+
         # Control Panel
         with dpg.window(label="Control Panel", width=200, height=80, pos=(BOARD_SIZE * CELL_SIZE + WINDOW_PADDING, WINDOW_PADDING)):
             dpg.add_button(label="Player vs Computer", callback=self.start_pvc)
             dpg.add_button(label="Reset Game", callback=self.reset_game)
 
+        # Handler Registry for mouse clicks
+        with dpg.handler_registry():
+            dpg.add_mouse_click_handler(callback=self.handle_click)  # Register global click handler
+
         # Set the game board as the primary window
         dpg.set_primary_window("game_board_window", True)
-        
+
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.start_dearpygui()
@@ -56,7 +59,7 @@ class ReversiGame:
 
     def draw_board(self):
         dpg.delete_item("board", children_only=True)
-        
+
         # Draw grid and pieces
         for x in range(BOARD_SIZE):
             for y in range(BOARD_SIZE):
@@ -72,7 +75,7 @@ class ReversiGame:
                                     CELL_SIZE / 2 - 5, color=(255, 255, 255), fill=(255, 255, 255), parent="board")
 
     def handle_click(self, sender, app_data):
-        # Mouse click position
+        # Only handle clicks within the board
         x, y = app_data[0] // CELL_SIZE, app_data[1] // CELL_SIZE
         if 0 <= x < BOARD_SIZE and 0 <= y < BOARD_SIZE:  # Ensure clicks are within the board bounds
             if self.is_valid_move(x, y, self.current_turn):
