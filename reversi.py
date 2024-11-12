@@ -167,3 +167,6 @@ class ReversiGame:
         else:
             winner = "It's a tie!"
         dpg.set_value("current_player", f"Game Over: {winner}")
+
+if __name__ == "__main__":
+    game = ReversiGame()
