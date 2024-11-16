@@ -8,6 +8,13 @@ It uses the Dear PyGui library.
 
 ChatGPT conversation: https://chatgpt.com/share/67337e82-2508-800c-97ad-2630cc47c202
 
+## Make a venv (optional)
+
+```
+python3 -m venv venv
+. venv/bin/activate
+```
+
 ## Install dependencies
 
 `pip install .`
