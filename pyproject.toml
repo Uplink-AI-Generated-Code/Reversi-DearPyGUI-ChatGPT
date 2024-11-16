@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "reversi"
+version = "1.0.0"
+description = "A Reversi game implementation using Dear PyGui. Written mostly by ChatGPT."
+authors = ["Radu Cristescu <radu.cx@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+dearpygui = "^2.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
